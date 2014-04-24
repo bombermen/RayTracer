@@ -1,3 +1,13 @@
 RayTracer.vcxproj
 RayTracer.vcxproj.user
 RayTracer.vcxproj.filters
+*.rc
+*.lastbuildstate
+*.res
+*.manifest
+*.cache
+*.tlog
+*.obj
+*.idb
+*.pdb
+*.log

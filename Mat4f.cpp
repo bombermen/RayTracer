@@ -12,6 +12,11 @@ Mat4f::Mat4f(float value)
     this->clear(value);
 }
 
+Mat4f::Mat4f(const float values[]) {
+	_values = new float[ROWS * COLS];
+	this->setValues(values);
+}
+
 Mat4f::Mat4f(std::vector<float> values)
 {
     _values = new float[ROWS * COLS];
@@ -26,27 +31,54 @@ Mat4f::Mat4f(const Mat4f& matrix)
     this->setValues(matrix._values);
 }
 
+Mat4f::Mat4f(const Vec4f& i, const Vec4f& j, const Vec4f& k, const Vec4f& t)
+{
+	this->_values = new float[ROWS * COLS];
+	this->setI(i);
+	this->setJ(j);
+	this->setK(k);
+	this->setT(t);
+}
+
 Mat4f::~Mat4f()
 {
     delete[] this->_values;
+}
+
+Mat4f Mat4f::identity()
+{
+	float values[] = {1,0,0,0,
+					  0,1,0,0,
+					  0,0,1,0,
+					  0,0,0,1};
+
+	return Mat4f(values);
 }
 
 int Mat4f::getRows() const { return ROWS; }
 
 int Mat4f::getCols() const { return COLS; }
 
-Vec4f Mat4f::getRow(int index) const
+Vec4f Mat4f::getCol(int index) const
 {
-	return Vec4f(   this(0, index),
-					this(1, index),
-					this(2, index),
-					this(3, index));
+	return Vec4f(   this->getValueAt(0, index),
+					this->getValueAt(1, index),
+					this->getValueAt(2, index),
+					this->getValueAt(3, index));
 }
 
-Vec4f Mat4f::getI() const { return this->getRow(0); }
-Vec4f Mat4f::getJ() const { return this->getRow(1); }
-Vec4f Mat4f::getK() const { return this->getRow(2); }
-Vec4f Mat4f::getT() const { return this->getRow(3); }
+Vec4f Mat4f::getRow(int index) const
+{
+	return Vec4f(   this->getValueAt(index, 0),
+					this->getValueAt(index, 1),
+					this->getValueAt(index, 2),
+					this->getValueAt(index, 3));
+}
+
+Vec4f Mat4f::getI() const { return this->getCol(0); }
+Vec4f Mat4f::getJ() const { return this->getCol(1); }
+Vec4f Mat4f::getK() const { return this->getCol(2); }
+Vec4f Mat4f::getT() const { return this->getCol(3); }
 
 float Mat4f::getValueAt(int row, int col) const { return this->_values[col * ROWS + row]; }
 
@@ -62,6 +94,27 @@ void Mat4f::setValues(const std::vector<float>& values)
     for(unsigned int i = 0; i < lastElement; i++)
         _values[i] = values[i];
 }
+
+void Mat4f::setRow(int index, const Vec4f& row)
+{
+	this->setValueAt(row.getX(), index, 0);
+	this->setValueAt(row.getY(), index, 1);
+	this->setValueAt(row.getZ(), index, 2);
+	this->setValueAt(row.getW(), index, 3);
+}
+
+void Mat4f::setCol(int index, const Vec4f& col)
+{
+	this->setValueAt(col.getX(), 0, index);
+	this->setValueAt(col.getY(), 1, index);
+	this->setValueAt(col.getZ(), 2, index);
+	this->setValueAt(col.getW(), 3, index);
+}
+
+void Mat4f::setI(const Vec4f& i) { this->setCol(0, i); }
+void Mat4f::setJ(const Vec4f& j) { this->setCol(1, j); }
+void Mat4f::setK(const Vec4f& k) { this->setCol(2, k); }
+void Mat4f::setT(const Vec4f& t) { this->setCol(3, t); }
 
 void Mat4f::setValueAt(float value, int row, int col) { this->_values[col * ROWS + row] = value; }
 
@@ -81,6 +134,22 @@ void Mat4f::clear(float clearValue)
         _values[i] = clearValue;
 }
 
+Mat4f Mat4f::transposed() const
+{
+	return Mat4f(
+		this->getRow(0),
+		this->getRow(1),
+		this->getRow(2),
+		this->getRow(3)
+		);
+}
+
+Mat4f Mat4f::transpose()
+{
+	*this = this->transposed();
+	return *this;
+}
+
 const Mat4f& Mat4f::operator= (const Mat4f& matrix)
 {
     this->setValues(matrix._values);
@@ -95,7 +164,7 @@ float Mat4f::operator() (int row, int col) const
 Mat4f Mat4f::operator+ (const Mat4f& m) const
 {
     std::vector<float> values;
-    for(int i = 0; i < COLS * ROWS; i++)
+    for(int i = 0; i < COLS * ROWS; ++i)
         values.push_back(this->_values[i] + m._values[i]);
     return Mat4f(values);
 }
@@ -103,17 +172,32 @@ Mat4f Mat4f::operator+ (const Mat4f& m) const
 Mat4f Mat4f::operator* (const Mat4f& rhs) const
 {
     Mat4f result;
-    for(unsigned int row = 0; row < ROWS; row++)
-        for(unsigned int col = 0; col < COLS; col++)
-            for(unsigned int i = 0; i < COLS; i++)
+    for(unsigned int row = 0; row < ROWS; ++row)
+        for(unsigned int col = 0; col < COLS; ++col)
+            for(unsigned int i = 0; i < COLS; ++i)
                 result.addValueTo(this->getValueAt(row, i) * rhs.getValueAt(i, col) ,row, col);
     return Mat4f(result.getMat4f());
+}
+
+Mat4f Mat4f::operator* (const Vec4f& rhs) const
+{
+	float values[ROWS * COLS];
+
+	for(int i = 0; i < ROWS; ++i)
+	{
+		for(int j = 0; j < COLS; ++j)
+		{
+			values[i + j * COLS] = this->getRow(i) * rhs(j);
+		}
+	}
+
+	return Mat4f(values);
 }
 
 Mat4f Mat4f::operator* (float factor) const
 {
     std::vector<float> values;
-    for(int i = 0; i < COLS * ROWS; i++)
+    for(int i = 0; i < COLS * ROWS; ++i)
         values.push_back(this->_values[i] * factor);
     return Mat4f(values);
 }
@@ -170,9 +254,36 @@ const Mat4f& Mat4f::operator*= (float factor)
 	return *this;
 }
 
+const Mat4f& Mat4f::operator*= (const Vec4f& rhs)
+{
+    for(int i = 0; i < COLS * ROWS; i++)
+        this->_values[i] *= rhs(i);
+	return *this;
+}
+
 const Mat4f& Mat4f::operator/= (float factor)
 {
     for(int i = 0; i < COLS * ROWS; i++)
         this->_values[i] /= factor;
 	return *this;
+}
+
+std::ostream& operator<< (std::ostream& os, const Mat4f & m)
+{
+    os << "[Mat4f " << ROWS << "*" << COLS << "]" << std::endl;
+    for(unsigned int r = 0; r < ROWS; r++)
+    {
+        for(unsigned int c = 0; c < COLS; c++)
+            os << "+-------";
+        os << "+" << std::endl;
+
+        for(unsigned int c = 0; c < COLS; c++)
+            os << "| " << m.getValueAt(r, c) << "\t";
+        os << "|" << std::endl;
+    }
+    for(unsigned int c = 0; c < COLS; c++)
+        os << "+-------";
+    os << "+" << std::endl;
+
+    return os;
 }

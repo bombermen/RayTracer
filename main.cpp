@@ -1,12 +1,14 @@
 #include <iostream>
-#include "Mat4f.hpp"
+#include "SceneObject.hpp"
 
 int main(int argc, char ** argv)
 {
-	Mat4f mat(1);
-	std::cout << mat;
+	SceneObject o;
 
-
+	std::cout << o.getLocalMatrix() << std::endl;
+	o.scale(2);
+	o.translate(Vec4f(1));
+	std::cout << o.getLocalMatrix() << std::endl;
 
 	system("PAUSE");
 	return 0;
