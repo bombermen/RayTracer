@@ -11,3 +11,4 @@ RayTracer.vcxproj.filters
 *.idb
 *.pdb
 *.log
+Debug/RayTracer.unsuccessfulbuild

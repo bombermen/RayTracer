@@ -8,7 +8,7 @@ std::vector<Vec4f> Mesh::getVertices() const
 	return this->_vertices;
 }
 
-std::vector<unsigned int[3]> Mesh::getFaces() const
+std::vector<std::vector<unsigned int>> Mesh::getFaces() const
 {
 	return this->_faces;
 }
@@ -25,7 +25,7 @@ void Mesh::setVertices(const std::vector<Vec4f>& vertices)
 	this->_vertices = vertices;
 }
 
-void Mesh::setFaces(const std::vector<unsigned int[3]>& faces)
+void Mesh::setFaces(const std::vector<std::vector<unsigned int>>& faces)
 {
 	this->_faces = faces;
 }
