@@ -1,6 +1,6 @@
 #pragma once
-#include "shape.h"
-#include "QuadricInfinite.h"
+#include "shape.hpp"
+#include "QuadricInfinite.hpp"
 
 class QuadricFinite : public QuadricInfinite
 {

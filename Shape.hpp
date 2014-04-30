@@ -1,6 +1,6 @@
 #pragma once
-#include "sceneobject.h"
-#include "Ray.h"
+#include "sceneobject.hpp"
+#include "Ray.hpp"
 class Shape :
 	public SceneObject
 {

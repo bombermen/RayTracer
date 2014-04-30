@@ -1,6 +1,6 @@
 #pragma once
 
-#include "vec4f.h"
+#include "vec4f.hpp"
 
 class Ray
 {

@@ -1,5 +1,5 @@
 #pragma once
-#include "shape.h"
+#include "shape.hpp"
 class PlaneFinite :
 	public Shape
 {

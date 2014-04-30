@@ -1,6 +1,6 @@
 #pragma once
-#include "sceneobject.h"
-#include "vec4f.h"
+#include "sceneobject.hpp"
+#include "vec4f.hpp"
 
 class Light :
 	public SceneObject
