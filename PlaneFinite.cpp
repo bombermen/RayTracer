@@ -1,4 +1,4 @@
-#include "PlaneFinite.h"
+#include "PlaneFinite.hpp"
 
 
 PlaneFinite::PlaneFinite(void)
