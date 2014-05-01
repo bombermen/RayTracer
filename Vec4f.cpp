@@ -123,6 +123,16 @@ float Vec4f::operator* (float rhs) const
 	return this->getX() * rhs + this->getY() * rhs + this->getZ() * rhs + this->getW() * rhs;
 }
 
+Vec4f Vec4f::multiply (float rhs) const
+{
+	float x = this->getX() * rhs;
+	float y = this->getY() * rhs;
+	float z = this->getZ() * rhs;
+	float w = this->getW() * rhs;
+
+	return Vec4f(x, y, z, w);
+}
+
 float Vec4f::operator* (const Vec4f& rhs) const
 {
 	return this->getX() * rhs.getX() + this->getY() * rhs.getY() + this->getZ() * rhs.getZ() + this->getW() * rhs.getW();

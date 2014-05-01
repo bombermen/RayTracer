@@ -51,6 +51,8 @@ public:
 	void setXYZW(float x, float y, float z, float w);
 	void setRGBA(float r, float g, float b, float a);
 
+	Vec4f multiply (float rhs) const;
+
 	//operators
 	float operator() (int index) const;
 	float operator* (float rhs) const;

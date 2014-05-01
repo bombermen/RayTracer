@@ -268,21 +268,123 @@ const Mat4f& Mat4f::operator/= (float factor)
 	return *this;
 }
 
+float Mat4f::determinant() const
+{
+	float det = 0;
+	float sign = 1;
+
+	for(int i = 0; i < COLS; ++i)
+	{
+		float minor[9];
+		this->minor(0, i, minor);
+		float minorDet = getMat3Determinant(minor);
+		det += sign * this->getValueAt(0, i) * minorDet;
+		sign *= -1;
+	}
+
+	return det;
+}
+
+float getMat3Determinant(const float m[9])
+{
+	return m[0] * m[4] * m[8] +
+			m[3] * m[7] * m[2] +
+			m[6] * m[1] * m[5] -
+			m[6] * m[4] * m[2] -
+			m[0] * m[7] * m[5] -
+			m[3] * m[1] * m[8];
+}
+
+void Mat4f::minor(int row, int col, float * minor) const
+{
+	int minorIndex = 0;
+	for(int i = 0; i < 4; ++i)
+	{
+		for(int j = 0; j < 4; ++j)
+		{
+			if(i != row && j != col)
+			{
+				minor[minorIndex] = this->getValueAt(i,j);
+				++minorIndex;
+			}
+		}
+	}
+}
+
+Mat4f Mat4f::comatrix() const
+{
+	Mat4f com;
+	float sign = 1;
+	
+	for(int i = 0 ; i < 4; ++i)
+	{
+		for(int j = 0; j < 4; ++j)
+		{
+			float minor[9];
+			float minorDeterminant;
+
+			this->minor(i, j, minor);
+			minorDeterminant = getMat3Determinant(minor);
+			com.setValueAt(sign * minorDeterminant, i, j);
+
+			sign *= -1;
+		}
+		sign *= -1;
+	}
+	
+	return Mat4f(com);
+}
+
+Mat4f Mat4f::adjugate() const
+{
+	Mat4f comatrix = this->comatrix();
+	return comatrix.transposed();
+}
+
+Mat4f Mat4f::inverted() const
+{
+	float determinant = this->determinant();
+	Mat4f adjugate;
+
+	if(determinant == 0) {
+		return *this;
+	}
+
+	adjugate = this->adjugate();
+	return adjugate * (1 / determinant);
+}
+
+Mat4f Mat4f::invert()
+{
+	Mat4f i = this->inverted();
+	return *this = i;
+}
+
 std::ostream& operator<< (std::ostream& os, const Mat4f & m)
 {
     os << "[Mat4f " << ROWS << "*" << COLS << "]" << std::endl;
     for(unsigned int r = 0; r < ROWS; r++)
     {
         for(unsigned int c = 0; c < COLS; c++)
-            os << "+-------";
+            os << "+--------";
         os << "+" << std::endl;
 
         for(unsigned int c = 0; c < COLS; c++)
-            os << "| " << m.getValueAt(r, c) << "\t";
+		{
+			float value = m.getValueAt(r, c);
+			if(value < .00001 && value > -.00001)
+				value = 0;
+			if(value < 0) 
+				os << "|";
+			else
+				os << "| ";
+            os << value << " ";
+			
+		}
         os << "|" << std::endl;
     }
     for(unsigned int c = 0; c < COLS; c++)
-        os << "+-------";
+        os << "+--------";
     os << "+" << std::endl;
 
     return os;

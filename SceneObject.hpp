@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Mat4f.hpp"
+#include <cmath>
 #include <vector>
 
 class SceneObject
@@ -22,7 +23,9 @@ public:
 	void translate(const Vec4f& t);
 	void scale(float s);
 	void scale(Vec4f s);
-	//void rotate();
+	void rotateX(float angle);
+	void rotateY(float angle);
+	void rotateZ(float angle);
 
 private:
 	Mat4f _localMatrix;

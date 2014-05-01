@@ -61,6 +61,38 @@ void SceneObject::scale(float s)
 
 void SceneObject::scale(Vec4f s)
 {
-	this->_localMatrix *= s;
-	this->_localMatrix.setValueAt(1, 3, 3);
+	Vec4f i = this->_localMatrix.getI().multiply( s.getX() );
+	Vec4f j = this->_localMatrix.getJ().multiply( s.getY() );
+	Vec4f k = this->_localMatrix.getK().multiply( s.getZ() );
+	
+	this->_localMatrix.setI(i);
+	this->_localMatrix.setJ(j);
+	this->_localMatrix.setK(k);
+}
+
+void SceneObject::rotateX(float theta)
+{
+	float cosT = std::cos(theta);
+	float sinT = std::sin(theta);
+
+	float values[] =   {1    , 0    , 0    , 0    ,
+						0    , cosT , -sinT, 0    ,
+						0    , sinT ,  cosT, 0    ,
+						0    , 0    ,  0   , 1    };
+
+	Mat4f rotationMatrix(values);
+
+	Mat4f rotated = this->_localMatrix * rotationMatrix;
+
+	this->_localMatrix = rotated;
+}
+
+void SceneObject::rotateY(float theta)
+{
+
+}
+
+void SceneObject::rotateZ(float theta)
+{
+
 }
