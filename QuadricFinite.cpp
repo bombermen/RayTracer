@@ -1,4 +1,4 @@
-#include "QuadricFinite.h"
+#include "QuadricFinite.hpp"
 
 
 QuadricFinite::QuadricFinite(void)
